@@ -3,8 +3,9 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './common/database';
 import { CommandModule } from 'nestjs-command';
 import { TodoModule } from './todo/todo.module';
-import { APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { CategoryModule } from './category/category.module';
+import { ForeignKeyConstraintFilter } from './common/filter';
 
 @Module({
   imports: [
@@ -19,7 +20,11 @@ import { CategoryModule } from './category/category.module';
   providers: [
     {
       provide: APP_PIPE,
-      useClass: ValidationPipe,
+      useFactory: () => new ValidationPipe({ transform: true }),
+    },
+    {
+      provide: APP_FILTER,
+      useClass: ForeignKeyConstraintFilter,
     },
   ],
 })

@@ -3,12 +3,16 @@ import {
   Column,
   DataType,
   Default,
+  DefaultScope,
   ForeignKey,
   Model,
   Table,
 } from 'sequelize-typescript';
 import { Category } from '../category/category.model';
 
+@DefaultScope(() => ({
+  include: [Category],
+}))
 @Table({
   tableName: 'todos',
 })

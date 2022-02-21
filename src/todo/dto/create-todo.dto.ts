@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
+import {
+  IsDateString,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 
 export class CreateTodoDTO {
   @IsNotEmpty()
@@ -8,4 +14,8 @@ export class CreateTodoDTO {
   @IsOptional()
   @IsUUID()
   categoryId?: string | null;
+
+  @IsOptional()
+  @IsDateString()
+  completedAt?: Date | null;
 }

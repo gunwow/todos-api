@@ -1,22 +1,54 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { Todo } from './todo.model';
 import { CreateTodoDTO } from './dto/create-todo.dto';
-import { Category } from '../category/category.model';
+import { PaginatedSet } from '../common/crud';
+import { QueryParamsDTO } from '../common/http';
 
 @Controller('todos')
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
+  @Get('all')
+  async findAll(): Promise<PaginatedSet<Todo[]>> {
+    return this.todoService.findAll();
+  }
+
   @Get()
-  async findAll(): Promise<Todo[]> {
-    return this.todoService.findAll({
-      include: [Category],
-    });
+  async find(@Query() query: QueryParamsDTO): Promise<PaginatedSet<Todo[]>> {
+    return this.todoService.findPaginated(query);
   }
 
   @Post()
-  create(@Body() payload: CreateTodoDTO) {
+  async create(@Body() payload: CreateTodoDTO): Promise<Todo> {
     return this.todoService.create(payload);
+  }
+
+  @Get(':id')
+  async findOneById(@Param('id', ParseUUIDPipe) id: string): Promise<Todo> {
+    return this.todoService.findByIdOrFail(id);
+  }
+
+  @Put(':id')
+  async update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() payload: CreateTodoDTO,
+  ): Promise<Todo> {
+    return this.todoService.updateByIdOrFail(id, payload);
+  }
+
+  @Delete(':id')
+  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    return this.todoService.removeByIdOrFail(id);
   }
 }
