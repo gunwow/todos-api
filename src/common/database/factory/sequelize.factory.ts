@@ -19,5 +19,6 @@ export const sequelizeFactory = async (
       );
       return exportedMember === member.toLowerCase();
     },
+    logging: console.log,
   });
 };
