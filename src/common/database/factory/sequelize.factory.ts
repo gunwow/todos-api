@@ -1,5 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { Sequelize } from 'sequelize-typescript';
+import { toBoolean } from '../../util';
 
 export const sequelizeFactory = async (
   configService: ConfigService,
@@ -12,6 +13,7 @@ export const sequelizeFactory = async (
     password: configService.get<string>('DB_PASSWORD'),
     database: configService.get<string>('DB_NAME'),
     models: [`${__dirname}/../../../**/*.model.{ts,js}`],
+    ssl: toBoolean(configService.get('DB_USE_SSL')),
     modelMatch: (filename: string, member) => {
       const exportedMember: string = filename.substring(
         0,
