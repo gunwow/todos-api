@@ -1,10 +1,15 @@
 import { ConfigService } from '@nestjs/config';
 import { Sequelize } from 'sequelize-typescript';
 import { toBoolean } from '../../util';
+import { getSequelizeSSLConfig, SequelizeSSLConfig } from './ssl.config';
 
 export const sequelizeFactory = async (
   configService: ConfigService,
 ): Promise<Sequelize> => {
+  const useSSL: boolean = toBoolean(configService.get('DB_USE_SSL'));
+  const { ssl, dialectOptions }: SequelizeSSLConfig =
+    getSequelizeSSLConfig(useSSL);
+
   return new Sequelize({
     dialect: 'postgres',
     host: configService.get<string>('DB_HOST'),
@@ -13,14 +18,8 @@ export const sequelizeFactory = async (
     password: configService.get<string>('DB_PASSWORD'),
     database: configService.get<string>('DB_NAME'),
     models: [`${__dirname}/../../../**/*.model.{ts,js}`],
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false,
-      },
-    },
-    // ssl: toBoolean(configService.get('DB_USE_SSL')),
-    ssl: true,
+    dialectOptions,
+    ssl,
     modelMatch: (filename: string, member) => {
       const exportedMember: string = filename.substring(
         0,
