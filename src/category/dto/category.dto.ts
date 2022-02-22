@@ -1,6 +1,6 @@
 import { IsHexColor, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class CreateCategoryDTO {
+export class CategoryDTO {
   @IsNotEmpty()
   @IsString()
   name: string;

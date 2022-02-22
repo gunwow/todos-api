@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   ParseUUIDPipe,
   Post,
@@ -11,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { Todo } from './todo.model';
-import { CreateTodoDTO } from './dto/create-todo.dto';
+import { TodoDTO } from './dto/todo.dto';
 import { PaginatedSet } from '../common/crud';
 import { QueryParamsDTO } from '../common/http';
 
@@ -30,7 +31,7 @@ export class TodoController {
   }
 
   @Post()
-  async create(@Body() payload: CreateTodoDTO): Promise<Todo> {
+  async create(@Body() payload: TodoDTO): Promise<Todo> {
     return this.todoService.create(payload);
   }
 
@@ -42,12 +43,13 @@ export class TodoController {
   @Put(':id')
   async update(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() payload: CreateTodoDTO,
+    @Body() payload: TodoDTO,
   ): Promise<Todo> {
     return this.todoService.updateByIdOrFail(id, payload);
   }
 
   @Delete(':id')
+  @HttpCode(204)
   async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this.todoService.removeByIdOrFail(id);
   }

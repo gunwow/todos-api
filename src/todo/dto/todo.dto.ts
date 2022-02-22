@@ -6,7 +6,7 @@ import {
   IsUUID,
 } from 'class-validator';
 
-export class CreateTodoDTO {
+export class TodoDTO {
   @IsNotEmpty()
   @IsString()
   content: string;
