@@ -14,7 +14,10 @@ export const sequelizeFactory = async (
     database: configService.get<string>('DB_NAME'),
     models: [`${__dirname}/../../../**/*.model.{ts,js}`],
     dialectOptions: {
-      ssl: true,
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
     },
     // ssl: toBoolean(configService.get('DB_USE_SSL')),
     ssl: true,
