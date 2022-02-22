@@ -6,7 +6,6 @@ COPY ./yarn.lock ./
 RUN yarn install
 COPY . .
 
-RUN yarn db:migrate
 RUN yarn build
 
 CMD ["yarn", "start:prod"]
