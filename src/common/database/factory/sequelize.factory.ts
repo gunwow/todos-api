@@ -13,7 +13,8 @@ export const sequelizeFactory = async (
     password: configService.get<string>('DB_PASSWORD'),
     database: configService.get<string>('DB_NAME'),
     models: [`${__dirname}/../../../**/*.model.{ts,js}`],
-    ssl: toBoolean(configService.get('DB_USE_SSL')),
+    // ssl: toBoolean(configService.get('DB_USE_SSL')),
+    ssl: true,
     modelMatch: (filename: string, member) => {
       const exportedMember: string = filename.substring(
         0,
