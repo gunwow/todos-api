@@ -5,7 +5,7 @@ export const up = async ({ context }: IMigratorOptions): Promise<void> => {
   await context.createTable('examples', {
     id: {
       type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      defaultValue: sequelize.literal('uuid_generate_v4()'),
       allowNull: false,
       primaryKey: true,
     },

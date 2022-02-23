@@ -6,6 +6,8 @@ import { TodoModule } from './todo/todo.module';
 import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { CategoryModule } from './category/category.module';
 import { ForeignKeyConstraintFilter } from './common/filter';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { ForeignKeyConstraintFilter } from './common/filter';
     CommandModule,
     TodoModule,
     CategoryModule,
+    UserModule,
+    AuthModule,
   ],
   providers: [
     {
