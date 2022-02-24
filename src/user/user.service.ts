@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { BaseService } from '../common/crud/base.service';
 import { User } from './user.model';
 import { UserRepository } from './user.repository';
-import { HashService } from '../hash/hash.service';
+import { HashService } from '../common/hash/hash.service';
 import { ModelPayload } from '../common/crud';
 
 @Injectable()
