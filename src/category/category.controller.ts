@@ -8,42 +8,57 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { Category } from './category.model';
 import { CategoryDTO } from './dto/category.dto';
 import { PaginatedSet } from '../common/crud';
+import { ReqUser } from '../auth/decorator/req-user.decorator';
+import { User } from '../user/user.model';
+import { AuthGuard } from '../auth/guard/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('categories')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Get()
-  async findAll(): Promise<PaginatedSet<Category[]>> {
-    return this.categoryService.findAll();
+  async findAll(@ReqUser() user: User): Promise<PaginatedSet<Category[]>> {
+    return this.categoryService.findAllByUserId(user.id);
   }
 
   @Post()
-  async create(@Body() payload: CategoryDTO): Promise<Category> {
-    return this.categoryService.create(payload);
+  async create(
+    @ReqUser() user: User,
+    @Body() payload: CategoryDTO,
+  ): Promise<Category> {
+    return this.categoryService.create({ ...payload, userId: user.id });
   }
 
   @Get(':id')
-  async findOneById(@Param('id', ParseUUIDPipe) id: string): Promise<Category> {
-    return this.categoryService.findByIdOrFail(id);
+  async findOneById(
+    @ReqUser() user: User,
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<Category> {
+    return this.categoryService.findOneByIdAndUserId(id, user.id);
   }
 
   @Put(':id')
   async update(
+    @ReqUser() user: User,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() payload: CategoryDTO,
   ): Promise<Category> {
-    return this.categoryService.updateByIdOrFail(id, payload);
+    return this.categoryService.updateOneByIdAndUserId(id, user.id, payload);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
-    return this.categoryService.removeByIdOrFail(id);
+  async remove(
+    @ReqUser() user: User,
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<void> {
+    return this.categoryService.removeOneByIdAndUserId(id, user.id);
   }
 }

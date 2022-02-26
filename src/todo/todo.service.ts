@@ -29,7 +29,10 @@ export class TodoService extends BaseCrudService<Todo, TodoRepository> {
     });
   }
 
-  async findByUserId(userId: string, paginationParams?: PaginationParams) {
+  async findByUserId(
+    userId: string,
+    paginationParams?: PaginationParams,
+  ): Promise<PaginatedSet<Todo[]>> {
     return this.findPaginated(paginationParams, { where: { userId } });
   }
 
