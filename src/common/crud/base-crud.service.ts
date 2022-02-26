@@ -8,9 +8,9 @@ import {
   PaginationParams,
   ResultsWithCountSet,
 } from './type';
-import { NotFoundException } from '@nestjs/common';
+import { ModelNotFoundException } from './error';
 
-export abstract class BaseService<
+export abstract class BaseCrudService<
   M extends Model,
   T extends BaseRepository<M>,
 > {
@@ -52,10 +52,15 @@ export abstract class BaseService<
   async findByIdOrFail(id: string): Promise<M> {
     const result: M = await this.findOneById(id);
     if (!result) {
-      throw new NotFoundException({
-        code: 'modelNotFound',
-        message: `Model with id [${id}] not found.`,
-      });
+      throw new ModelNotFoundException({ id });
+    }
+    return result;
+  }
+
+  async findOneOrFail(options: FindOptions<M>): Promise<M> {
+    const result: M = await this.findOne(options);
+    if (!result) {
+      throw new ModelNotFoundException();
     }
     return result;
   }

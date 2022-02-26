@@ -1,4 +1,13 @@
-import { Column, DataType, Default, Model, Table } from 'sequelize-typescript';
+import {
+  BelongsTo,
+  Column,
+  DataType,
+  Default,
+  ForeignKey,
+  Model,
+  Table,
+} from 'sequelize-typescript';
+import { User } from '../user/user.model';
 
 @Table({
   tableName: 'categories',
@@ -11,6 +20,10 @@ export class Category extends Model {
   })
   id: string;
 
+  @ForeignKey(() => User)
+  @Column(DataType.UUIDV4)
+  userId: string | null;
+
   @Column
   name: string;
 
@@ -19,4 +32,7 @@ export class Category extends Model {
 
   @Column
   color: string | null;
+
+  @BelongsTo(() => User)
+  user?: User;
 }

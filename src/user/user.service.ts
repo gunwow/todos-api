@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { BaseService } from '../common/crud/base.service';
+import { BaseCrudService } from '../common/crud/base-crud.service';
 import { User } from './user.model';
 import { UserRepository } from './user.repository';
 import { HashService } from '../common/hash/hash.service';
 import { ModelPayload } from '../common/crud';
 
 @Injectable()
-export class UserService extends BaseService<User, UserRepository> {
+export class UserService extends BaseCrudService<User, UserRepository> {
   constructor(
     protected readonly repository: UserRepository,
     private readonly hashService: HashService,

@@ -9,6 +9,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { Category } from '../category/category.model';
+import { User } from '../user/user.model';
 
 @DefaultScope(() => ({
   include: [Category],
@@ -28,8 +29,9 @@ export class Todo extends Model {
   @Column(DataType.UUIDV4)
   categoryId: string | null;
 
-  @BelongsTo(() => Category)
-  category: Category;
+  @ForeignKey(() => User)
+  @Column(DataType.UUIDV4)
+  userId: string | null;
 
   @Column({
     allowNull: false,
@@ -38,4 +40,10 @@ export class Todo extends Model {
 
   @Column
   completedAt: Date | null;
+
+  @BelongsTo(() => Category)
+  category?: Category;
+
+  @BelongsTo(() => User)
+  user?: User;
 }
