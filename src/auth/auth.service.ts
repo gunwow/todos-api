@@ -6,22 +6,21 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { v4 as uuidv4 } from 'uuid';
 import { AuthTokensDTO } from './dto/auth-tokens.dto';
-import { IJwtPayload } from './type/jwt-payload.interface';
 import { SignInDTO } from './dto/sign-in.dto';
 import { HashService } from '../common/hash/hash.service';
+import { JwtTokenService } from '../common/jwt-token/jwt-token.service';
+import { IJwtPayload } from './type/jwt-payload.interface';
+import { RefreshDTO } from './dto/refresh.dto';
+import { AccessTokenDTO } from './dto/access-token.dto';
+import { AuthError } from './error/auth-error.enum';
 
 @Injectable()
 export class AuthService {
-  static ACCESS_TOKEN_LIFETIME = 300; // 5 min
-  static REFRESH_TOKEN_LIFETIME = 2592000; // 30 days
-
   constructor(
     private readonly userService: UserService,
-    private readonly jwtService: JwtService,
     private readonly hashService: HashService,
+    private readonly jwtTokenService: JwtTokenService,
   ) {}
 
   async signIn({ email, password }: SignInDTO): Promise<AuthTokensDTO> {
@@ -34,7 +33,25 @@ export class AuthService {
       throw new UnauthorizedException(`Credentials don't match.`);
     }
 
-    return this.generateAuthTokens(user.id);
+    return this.jwtTokenService.generateAuthTokens(user.id);
+  }
+
+  async refresh(payload: RefreshDTO): Promise<AccessTokenDTO> {
+    let decoded: IJwtPayload;
+    try {
+      decoded = await this.decodeToken(payload.refreshToken);
+    } catch (err) {
+      throw new UnauthorizedException(err.message);
+    }
+
+    if (!decoded.isRefresh) {
+      throw new UnauthorizedException(AuthError.REFRESH_TOKEN_NOT_PROVIDED);
+    }
+
+    const accessToken: string = await this.jwtTokenService.generateAccessToken(
+      decoded.userId,
+    );
+    return { accessToken };
   }
 
   async signUp(payload: SignUpDTO): Promise<AuthTokensDTO> {
@@ -47,44 +64,10 @@ export class AuthService {
 
     const createdUser: User = await this.userService.create(payload);
 
-    return this.generateAuthTokens(createdUser.id);
+    return this.jwtTokenService.generateAuthTokens(createdUser.id);
   }
 
   async decodeToken(token: string): Promise<IJwtPayload> {
-    return this.jwtService.verifyAsync(token);
-  }
-
-  private async generateAuthTokens(userId: string): Promise<AuthTokensDTO> {
-    const accessToken: string = await this.generateAccessToken(userId);
-    const refreshToken: string = await this.generateRefreshToken(userId);
-
-    return {
-      accessToken,
-      refreshToken,
-    };
-  }
-
-  private async generateAccessToken(userId: string): Promise<string> {
-    return this.jwtService.signAsync(
-      <IJwtPayload>{
-        userId,
-      },
-      {
-        expiresIn: AuthService.ACCESS_TOKEN_LIFETIME,
-      },
-    );
-  }
-
-  private async generateRefreshToken(userId: string): Promise<string> {
-    return this.jwtService.signAsync(
-      <IJwtPayload>{
-        userId,
-        data: uuidv4(),
-        isRefresh: true,
-      },
-      {
-        expiresIn: AuthService.REFRESH_TOKEN_LIFETIME,
-      },
-    );
+    return this.jwtTokenService.decodeToken(token);
   }
 }

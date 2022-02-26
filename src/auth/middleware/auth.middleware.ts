@@ -4,6 +4,7 @@ import { UserService } from '../../user/user.service';
 import { Response } from 'express';
 import { IJwtPayload } from '../type/jwt-payload.interface';
 import { IRequestWithUser } from '../type/request-with-user.interface';
+import { AuthError } from '../error/auth-error.enum';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
@@ -22,7 +23,7 @@ export class AuthMiddleware implements NestMiddleware {
     const authorizationHeader: string = request.header('Authorization');
 
     if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
-      this.logException(request, 'Bearer token not provided.');
+      this.logException(request, AuthError.BEARER_NOT_PROVIDED);
       return next();
     }
 
@@ -33,7 +34,7 @@ export class AuthMiddleware implements NestMiddleware {
         await this.authService.decodeToken(token);
 
       if (isRefresh) {
-        this.logException(request, 'Bearer token not provided.');
+        this.logException(request, AuthError.REFRESH_TOKEN_PROVIDED);
         return next();
       }
 
