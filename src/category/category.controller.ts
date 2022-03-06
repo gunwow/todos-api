@@ -8,6 +8,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
@@ -17,15 +18,25 @@ import { PaginatedSet } from '../common/crud';
 import { ReqUser } from '../auth/decorator/req-user.decorator';
 import { User } from '../user/user.model';
 import { AuthGuard } from '../auth/guard/auth.guard';
+import { Todo } from '../todo/todo.model';
+import { QueryParamsDTO } from '../common/http';
 
 @UseGuards(AuthGuard)
 @Controller('categories')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
-  @Get()
+  @Get('all')
   async findAll(@ReqUser() user: User): Promise<PaginatedSet<Category[]>> {
     return this.categoryService.findAllByUserId(user.id);
+  }
+
+  @Get()
+  async find(
+    @ReqUser() user: User,
+    @Query() query: QueryParamsDTO,
+  ): Promise<PaginatedSet<Category[]>> {
+    return this.categoryService.findByUserId(user.id, query);
   }
 
   @Post()
