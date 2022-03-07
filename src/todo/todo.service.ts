@@ -53,7 +53,7 @@ export class TodoService extends BaseCrudService<Todo, TodoRepository> {
     payload: ModelPayload<Todo>,
   ): Promise<Todo> {
     await this.findOneByIdAndUserId(id, userId);
-    await this.validatePayload(payload);
+    await this.validatePayload({ ...payload, userId });
     return this.update(id, payload);
   }
 
