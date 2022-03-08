@@ -18,7 +18,6 @@ import { PaginatedSet } from '../common/crud';
 import { ReqUser } from '../auth/decorator/req-user.decorator';
 import { User } from '../user/user.model';
 import { AuthGuard } from '../auth/guard/auth.guard';
-import { Todo } from '../todo/todo.model';
 import { QueryParamsDTO } from '../common/http';
 
 @UseGuards(AuthGuard)
