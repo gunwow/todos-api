@@ -4,9 +4,14 @@ import { User } from './user.model';
 import { UserRepository } from './user.repository';
 import { HashService } from '../common/hash/hash.service';
 import { ModelPayload } from '../common/crud';
+import { FindOptions } from 'sequelize';
+
+type UserFields = (keyof User)[];
 
 @Injectable()
 export class UserService extends BaseCrudService<User, UserRepository> {
+  private excludedFields: UserFields = ['password'];
+
   constructor(
     protected readonly repository: UserRepository,
     private readonly hashService: HashService,
@@ -24,6 +29,32 @@ export class UserService extends BaseCrudService<User, UserRepository> {
       ...payload,
       password: hashedPassword,
     };
+  }
+
+  private resolveExcludedFields(exclude?: UserFields): UserFields {
+    return exclude ?? this.excludedFields;
+  }
+
+  async findByIdWithoutExcludedFieldsOrFail(
+    id: string,
+    exclude?: UserFields,
+  ): Promise<User> {
+    return this.findOneWithoutExcludedFieldsOrFail(
+      {
+        where: { id },
+      },
+      exclude,
+    );
+  }
+
+  async findOneWithoutExcludedFieldsOrFail(
+    options?: FindOptions<User>,
+    exclude?: UserFields,
+  ): Promise<User> {
+    return this.findOneOrFail({
+      ...options,
+      attributes: { exclude: this.resolveExcludedFields(exclude) },
+    });
   }
 
   async findByEmail(email: string): Promise<User> {

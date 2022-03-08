@@ -11,6 +11,6 @@ export class UserController {
 
   @Get('/me')
   async me(@ReqUser() user: User): Promise<User> {
-    return user;
+    return this.userService.findByIdWithoutExcludedFieldsOrFail(user.id);
   }
 }
