@@ -1,15 +1,21 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { TodoRepository } from './todo.repository';
 import { BaseCrudService } from '../common/crud/base-crud.service';
 import { Todo } from './todo.model';
-import { ModelPayload, PaginatedSet, PaginationParams } from '../common/crud';
+import { ModelPayload, PaginatedSet } from '../common/crud';
 import { CategoryService } from '../category/category.service';
-import { TodoQueryParamsDTO } from './dto/todo-query-params.dto';
-import { FindOptions, OrderItem } from 'sequelize';
+import {
+  TodoFiltersMap,
+  TodoQueryParamsDTO,
+} from './dto/todo-query-params.dto';
+import { FindOptions } from 'sequelize';
 import { WhereOptions } from 'sequelize';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class TodoService extends BaseCrudService<Todo, TodoRepository> {
+  private readonly logger: Logger = new Logger(TodoService.name);
+
   constructor(
     private readonly categoryService: CategoryService,
     protected readonly repository: TodoRepository,
@@ -38,12 +44,13 @@ export class TodoService extends BaseCrudService<Todo, TodoRepository> {
   ): Promise<PaginatedSet<Todo[]>> {
     try {
       const options: FindOptions<Todo> = {
-        where: { ...query.filter, userId } as WhereOptions,
-        order: Object.entries(query.sort),
+        where: this.resolveWhereQuery(query.filter, userId),
+        order: Object.entries(query.sort || {}),
       };
       return await this.findPaginated({ limit, offset }, options);
-    } catch(err) {
-      throw new BadRequestException('Provided fields don\'t exist.');
+    } catch (err) {
+      this.logger.warn(err);
+      throw new BadRequestException("Provided fields don't exist.");
     }
   }
 
@@ -71,5 +78,30 @@ export class TodoService extends BaseCrudService<Todo, TodoRepository> {
   async removeOneByIdAndUserId(id: string, userId: string): Promise<void> {
     await this.findOneByIdAndUserId(id, userId);
     return this.remove(id);
+  }
+
+  private resolveWhereQuery(
+    { isCompleted, ...where }: TodoFiltersMap,
+    userId: string,
+  ): WhereOptions<Todo> {
+    return {
+      ...where,
+      ...this.resolveIsCompletedClause(isCompleted),
+      userId,
+    };
+  }
+
+  private resolveIsCompletedClause(
+    isCompleted: boolean | null | undefined,
+  ): WhereOptions<Todo> {
+    if (isCompleted === null || isCompleted === undefined) {
+      return {};
+    }
+
+    return {
+      completedAt: {
+        [isCompleted ? Op.not : Op.eq]: null,
+      },
+    };
   }
 }

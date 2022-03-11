@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
   IsEnum,
@@ -8,6 +8,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { QueryParamsDTO, SortEnum } from 'src/common/http';
+import { toBoolean } from 'src/common/util';
 
 export class TodoSortMap {
   @IsOptional()
@@ -30,6 +31,7 @@ export class TodoFiltersMap {
 
   @IsOptional()
   @IsBoolean()
+  @Transform(({ value }) => (value ? toBoolean(value) : null))
   isCompleted?: boolean;
 }
 

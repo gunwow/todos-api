@@ -15,7 +15,6 @@ import { TodoService } from './todo.service';
 import { Todo } from './todo.model';
 import { TodoDTO } from './dto/todo.dto';
 import { PaginatedSet } from '../common/crud';
-import { QueryParamsDTO } from '../common/http';
 import { AuthGuard } from '../auth/guard/auth.guard';
 import { ReqUser } from '../auth/decorator/req-user.decorator';
 import { User } from '../user/user.model';
