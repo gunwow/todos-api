@@ -19,6 +19,7 @@ import { QueryParamsDTO } from '../common/http';
 import { AuthGuard } from '../auth/guard/auth.guard';
 import { ReqUser } from '../auth/decorator/req-user.decorator';
 import { User } from '../user/user.model';
+import { TodoQueryParamsDTO } from './dto/todo-query-params.dto';
 
 @UseGuards(AuthGuard)
 @Controller('todos')
@@ -33,7 +34,7 @@ export class TodoController {
   @Get()
   async find(
     @ReqUser() user: User,
-    @Query() query: QueryParamsDTO,
+    @Query() query: TodoQueryParamsDTO,
   ): Promise<PaginatedSet<Todo[]>> {
     return this.todoService.findByUserId(user.id, query);
   }

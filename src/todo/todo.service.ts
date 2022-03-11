@@ -1,9 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { TodoRepository } from './todo.repository';
 import { BaseCrudService } from '../common/crud/base-crud.service';
 import { Todo } from './todo.model';
 import { ModelPayload, PaginatedSet, PaginationParams } from '../common/crud';
 import { CategoryService } from '../category/category.service';
+import { TodoQueryParamsDTO } from './dto/todo-query-params.dto';
+import { FindOptions, OrderItem } from 'sequelize';
+import { WhereOptions } from 'sequelize';
 
 @Injectable()
 export class TodoService extends BaseCrudService<Todo, TodoRepository> {
@@ -31,9 +34,17 @@ export class TodoService extends BaseCrudService<Todo, TodoRepository> {
 
   async findByUserId(
     userId: string,
-    paginationParams?: PaginationParams,
+    { limit, offset, ...query }: TodoQueryParamsDTO,
   ): Promise<PaginatedSet<Todo[]>> {
-    return this.findPaginated(paginationParams, { where: { userId } });
+    try {
+      const options: FindOptions<Todo> = {
+        where: { ...query.filter, userId } as WhereOptions,
+        order: Object.entries(query.sort),
+      };
+      return await this.findPaginated({ limit, offset }, options);
+    } catch(err) {
+      throw new BadRequestException('Provided fields don\'t exist.');
+    }
   }
 
   async findOneByIdAndUserId(id: string, userId: string): Promise<Todo> {

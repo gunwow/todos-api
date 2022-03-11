@@ -12,3 +12,8 @@ export class QueryParamsDTO {
   @Transform((property) => +property.value ?? null)
   offset?: number;
 }
+
+export enum SortEnum {
+  DESC = 'desc',
+  ASC = 'asc',
+}
