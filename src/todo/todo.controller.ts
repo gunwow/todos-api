@@ -18,7 +18,8 @@ import { PaginatedSet } from '../common/crud';
 import { AuthGuard } from '../auth/guard/auth.guard';
 import { ReqUser } from '../auth/decorator/req-user.decorator';
 import { User } from '../user/user.model';
-import { TodoQueryParamsDTO } from './dto/todo-query-params.dto';
+import { QueryParamsDTO } from 'src/common/http';
+import { QueryFiltersPipe } from 'src/common/http/filters-query.pipe';
 
 @UseGuards(AuthGuard)
 @Controller('todos')
@@ -33,7 +34,7 @@ export class TodoController {
   @Get()
   async find(
     @ReqUser() user: User,
-    @Query() query: TodoQueryParamsDTO,
+    @Query(QueryFiltersPipe) query: QueryParamsDTO,
   ): Promise<PaginatedSet<Todo[]>> {
     return this.todoService.findByUserId(user.id, query);
   }

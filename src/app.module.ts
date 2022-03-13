@@ -14,6 +14,7 @@ import { ForeignKeyConstraintFilter } from './common/filter';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { AuthMiddleware } from './auth/middleware/auth.middleware';
+import { DatabaseErrorFilter } from './common/filter/database-error.filter';
 
 @Module({
   imports: [
@@ -35,6 +36,10 @@ import { AuthMiddleware } from './auth/middleware/auth.middleware';
     {
       provide: APP_FILTER,
       useClass: ForeignKeyConstraintFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: DatabaseErrorFilter,
     },
   ],
 })

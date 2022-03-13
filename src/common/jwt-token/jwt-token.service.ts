@@ -3,13 +3,14 @@ import { IJwtPayload } from '../../auth/type/jwt-payload.interface';
 import { AuthTokensDTO } from '../../auth/dto/auth-tokens.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class JwtTokenService {
-  static ACCESS_TOKEN_LIFETIME = 300; // 5 min
-  static REFRESH_TOKEN_LIFETIME = 2592000; // 30 days
-
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+  ) {}
 
   async decodeToken(token: string): Promise<IJwtPayload> {
     return this.jwtService.verifyAsync(token);
@@ -26,17 +27,25 @@ export class JwtTokenService {
   }
 
   async generateAccessToken(userId: string): Promise<string> {
+    const accessTokenTTL: number = +this.configService.get(
+      'JWT_ACCESS_TOKEN_TTL',
+    );
+
     return this.jwtService.signAsync(
       <IJwtPayload>{
         userId,
       },
       {
-        expiresIn: JwtTokenService.ACCESS_TOKEN_LIFETIME,
+        expiresIn: accessTokenTTL,
       },
     );
   }
 
   async generateRefreshToken(userId: string): Promise<string> {
+    const refreshTokenTTL: number = +this.configService.get(
+      'JWT_REFRESH_TOKEN_TTL',
+    );
+
     return this.jwtService.signAsync(
       <IJwtPayload>{
         userId,
@@ -44,7 +53,7 @@ export class JwtTokenService {
         isRefresh: true,
       },
       {
-        expiresIn: JwtTokenService.REFRESH_TOKEN_LIFETIME,
+        expiresIn: refreshTokenTTL,
       },
     );
   }
