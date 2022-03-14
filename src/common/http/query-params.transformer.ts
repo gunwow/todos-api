@@ -20,7 +20,7 @@ export const transformToSingleWhereClause = (
 
   let value: any;
   if (typeof initialValue !== 'object') {
-    value = transformValue(value);
+    value = transformValue(initialValue);
   } else {
     value = Object.entries(initialValue || {}).map(
       ([prop, propValue]: FiltersKeyValuePair) =>
@@ -48,8 +48,8 @@ export const transformOperator = (initialValue: string): string | symbol => {
   if (initialValue.charAt(0) !== '$') {
     return initialValue;
   }
-  const oper: string = initialValue.replace('$', '');
-  return <symbol>Op[oper];
+  const operator: string = initialValue.replace('$', '');
+  return <symbol>Op[operator];
 };
 
 export const formWhereOptions = <T>(
