@@ -1,5 +1,5 @@
 import { Op, WhereOptions } from 'sequelize';
-import { SingleQuery, FiltersKeyValuePair, FiltersMap } from './type';
+import { SingleQuery, FiltersKeyValuePair, FiltersMap } from '../type';
 
 export const transformToWhereOptions = <T = unknown>(
   filtersMap: FiltersMap<T>,

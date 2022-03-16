@@ -1,7 +1,8 @@
 import { IsNumber, IsOptional } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { WhereOptions } from 'sequelize';
-import { FiltersMap, transformToWhereOptions } from '.';
+import { FiltersMap, OrderOptions, SortMap, transformToWhereOptions } from '.';
+import { transformToOrderOptions } from './transformer';
 
 export class PaginationParamsDTO {
   @IsOptional()
@@ -19,12 +20,17 @@ export class QueryParamsDTO<
   T = Partial<Record<string, any>>,
 > extends PaginationParamsDTO {
   @IsOptional()
-  @Transform((p) => {
-    return transformToWhereOptions(p.value);
-  })
+  @Transform(({ value }) => transformToWhereOptions(value))
   filter: FiltersMap<T>;
+
+  @IsOptional()
+  @Transform(({ value }) => transformToOrderOptions(value))
+  sort: SortMap<T>;
 }
 
-export class QueryFiltersDTO<T = unknown> extends PaginationParamsDTO {
+export class QueryFiltersDTO<
+  T = Record<string, any>,
+> extends PaginationParamsDTO {
   where?: WhereOptions<T>;
+  order?: OrderOptions<T>;
 }

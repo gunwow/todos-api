@@ -34,7 +34,7 @@ export class TodoController {
   @Get()
   async find(
     @ReqUser() user: User,
-    @Query(QueryFiltersPipe) query: QueryParamsDTO,
+    @Query(QueryFiltersPipe) query: QueryParamsDTO<Todo>,
   ): Promise<PaginatedSet<Todo[]>> {
     return this.todoService.findByUserId(user.id, query);
   }

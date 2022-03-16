@@ -34,11 +34,11 @@ export class TodoService extends BaseCrudService<Todo, TodoRepository> {
 
   async findByUserId(
     userId: string,
-    { limit, offset, where }: QueryFiltersDTO,
+    { limit, offset, where, order }: QueryFiltersDTO,
   ): Promise<PaginatedSet<Todo[]>> {
     return await this.findPaginated(
       { limit, offset },
-      { where: { ...where, userId } },
+      { where: { ...where, userId }, order },
     );
   }
 
