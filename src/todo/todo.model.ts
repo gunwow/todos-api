@@ -39,6 +39,9 @@ export class Todo extends Model {
   content: string;
 
   @Column
+  scheduledAt: Date | null;
+
+  @Column
   completedAt: Date | null;
 
   @BelongsTo(() => Category)

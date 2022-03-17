@@ -18,4 +18,8 @@ export class TodoDTO {
   @IsOptional()
   @IsDateString()
   completedAt?: Date | null;
+
+  @IsOptional()
+  @IsDateString()
+  scheduledAt?: Date | null;
 }
