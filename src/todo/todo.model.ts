@@ -3,7 +3,6 @@ import {
   Column,
   DataType,
   Default,
-  DefaultScope,
   ForeignKey,
   Model,
   Table,
@@ -11,9 +10,6 @@ import {
 import { Category } from '../category/category.model';
 import { User } from '../user/user.model';
 
-@DefaultScope(() => ({
-  include: [Category],
-}))
 @Table({
   tableName: 'todos',
 })

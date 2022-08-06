@@ -1,4 +1,12 @@
-import { Column, DataType, Default, Model, Table } from 'sequelize-typescript';
+import {
+  Column,
+  DataType,
+  Default,
+  HasMany,
+  Model,
+  Table,
+} from 'sequelize-typescript';
+import { Todo } from '../todo/todo.model';
 
 @Table({
   tableName: 'users',
@@ -26,4 +34,7 @@ export class User extends Model {
     allowNull: false,
   })
   password: string;
+
+  @HasMany(() => Todo)
+  todos: Todo[];
 }

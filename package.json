@@ -1,7 +1,7 @@
 {
-  "name": "nestjs-template",
+  "name": "toolbox-api",
   "version": "0.0.1",
-  "description": "",
+  "description": "Toolbox API - tool for saving various docs, tasks, credentials etc.",
   "author": "",
   "private": true,
   "license": "UNLICENSED",

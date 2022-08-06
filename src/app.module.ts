@@ -14,6 +14,7 @@ import { ForeignKeyConstraintFilter } from './common/filter';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { AuthMiddleware } from './auth/middleware/auth.middleware';
+import { DocumentModule } from './document/document.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { AuthMiddleware } from './auth/middleware/auth.middleware';
     CategoryModule,
     UserModule,
     AuthModule,
+    DocumentModule,
   ],
   providers: [
     {
