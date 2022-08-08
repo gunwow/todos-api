@@ -5,9 +5,7 @@ import { INestApplicationContext } from '@nestjs/common';
 
 const bootstrap = async () => {
   const app: INestApplicationContext =
-    await NestFactory.createApplicationContext(AppModule, {
-      logger: ['error'],
-    });
+    await NestFactory.createApplicationContext(AppModule);
 
   try {
     await app.select(CommandModule).get(CommandService).exec();
